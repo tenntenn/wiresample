@@ -1,31 +1,33 @@
 package wether
 
-import "context"
+import (
+	"context"
+
+	"github.com/morikuni/failure"
+)
 
 // Celsius represents temperature by the celsius.
 type Celsius float64
 
-type Wether struct {
+// Weather represents weather infomation.
+type Weather struct {
 	Temperature       Celsius
 	PrecipProbability float64
 	Summary           string
 }
 
+// Reporter provides weather information.
 type Reporter struct {
-	clock clock.Clock
-	geo   geocoding.Geocoding
-	src   source.Source
+	Clock 	clock.Clock
+	Geo   	geocoding.Geocoding
+	Source	source.Source
 }
 
-type ReporterConfig func(*Reporter)
-
-func NewReporter(conf ...ReporterConifg) {
-}
-
-func (r *Reporter) Now(ctx context.Context, address string) (*Wether, error) {
-	lat, lng, err := geo.AddrToLatlng(ctx, address)
+// Now returns current weather information of specified address.
+func (r *Reporter) Now(ctx context.Context, address string) (*Weather, error) {
+	lat, lng, err := geo.AddrToLatLng(ctx, address)
 	if err != nil {
-		return failure.Wrap(err)
+		return nil, failure.Wrap(err)
 	}
 
 	t := clock.Now()
