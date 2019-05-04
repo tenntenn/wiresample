@@ -1,27 +1,33 @@
-package wether
+package weather
 
 import (
 	"context"
 
 	"github.com/morikuni/failure"
+	"github.com/tenntenn/wiresample/clock"
 )
 
 // Reporter provides weather information.
 type Reporter struct {
-	Clock  clock.Clock
-	Geo    geocoding.Geocoding
-	Source source.Source
+	c clock.Clock
+	g geo.Geocoding
+	s source.Source
+}
+
+// NewReporter creates a Reporter.
+func NewReporter(c clock.Clock, g geo.Geocoding, s source.Source) *Reporter {
+	return &Reporter{c: c, g: g, s: s}
 }
 
 // Now returns current weather information of specified address.
 func (r *Reporter) Now(ctx context.Context, address string) (*Weather, error) {
-	lat, lng, err := r.Geo.LatLng(ctx, address)
+	lat, lng, err := r.g.LatLng(ctx, address)
 	if err != nil {
 		return nil, failure.Wrap(err)
 	}
 
-	t := r.Clock.Now(ctx)
-	w, err := r.Source.ByLatLng(ctx, t, lat, lng)
+	t := r.c.Now(ctx)
+	w, err := r.s.ByLatLng(ctx, t, lat, lng)
 	if err != nil {
 		return nil, failue.Wrap(err)
 	}
