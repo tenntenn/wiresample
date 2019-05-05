@@ -1,4 +1,4 @@
-package weather
+package source
 
 // Celsius represents temperature by the celsius.
 type Celsius float64

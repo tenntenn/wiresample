@@ -5,31 +5,38 @@ import (
 
 	"github.com/morikuni/failure"
 	"github.com/tenntenn/wiresample/clock"
+	"github.com/tenntenn/wiresample/weather/geo"
+	"github.com/tenntenn/wiresample/weather/source"
 )
 
 // Reporter provides weather information.
 type Reporter struct {
-	c clock.Clock
-	g geo.Geocoding
-	s source.Source
+	Clock  clock.Clock
+	Geo    geo.Geocoding
+	Source source.Source
 }
 
-// NewReporter creates a Reporter.
-func NewReporter(c clock.Clock, g geo.Geocoding, s source.Source) *Reporter {
-	return &Reporter{c: c, g: g, s: s}
+// NewReporter creates a default reporter.
+func NewReporter() *Reporter {
+	r, _, err := newDefaultReporter()
+	if err != nil {
+		// error must not be occurred
+		panic(err)
+	}
+	return r
 }
 
 // Now returns current weather information of specified address.
-func (r *Reporter) Now(ctx context.Context, address string) (*Weather, error) {
-	lat, lng, err := r.g.LatLng(ctx, address)
+func (r *Reporter) Now(ctx context.Context, address string) (*source.Weather, error) {
+	lat, lng, err := r.Geo.LatLng(ctx, address)
 	if err != nil {
 		return nil, failure.Wrap(err)
 	}
 
-	t := r.c.Now(ctx)
-	w, err := r.s.ByLatLng(ctx, t, lat, lng)
+	t := r.Clock.Now(ctx)
+	w, err := r.Source.ByLatLng(ctx, t, lat, lng)
 	if err != nil {
-		return nil, failue.Wrap(err)
+		return nil, failure.Wrap(err)
 	}
 
 	return w, nil

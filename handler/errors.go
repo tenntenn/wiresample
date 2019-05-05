@@ -34,5 +34,5 @@ func errToMessage(err error) string {
 	if ok {
 		return msg
 	}
-	return "Error"
+	return "Error:" + http.StatusText(errToStatus(err))
 }

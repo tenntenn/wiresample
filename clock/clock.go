@@ -19,6 +19,8 @@ func (f ClockFunc) Now(ctx context.Context) time.Time {
 }
 
 // Default returns current time by using time.Now.
-var Default Clock = ClockFunc(func(ctx context.Context) time.Time {
-	return time.Now()
-})
+func Default() Clock {
+	return ClockFunc(func(ctx context.Context) time.Time {
+		return time.Now()
+	})
+}

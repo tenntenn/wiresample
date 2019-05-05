@@ -1,15 +1,20 @@
 package main
 
 import (
-	"github.com/google/wire"
+	"net"
+	"net/http"
+	"os"
+
 	"github.com/tenntenn/wiresample/handler"
-	"github.com/tenntenn/wiresample/weather"
 )
 
-var appSet = wire.NewSet(
-	weather.NewReporter,
-	handler.New,
-)
+//go:generate wire ./...
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	addr := net.JoinHostPort("", port)
+	http.ListenAndServe(addr, handler.New())
 }

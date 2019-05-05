@@ -1,20 +1,28 @@
 package handler
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/tenntenn/wiresample/weather"
+)
 
 // Handler provides handlers for the service.
 type Handler struct {
-	router *http.ServeMux
-	wr     *weather.Reporter
+	router   http.ServeMux
+	Reporter *weather.Reporter
 }
 
 var _ http.Handler = (*Handler)(nil)
 
 // New creates a handler which implments http.Handler.
-func New(wr *weather.Reporter) *Handler {
-	var h Handler
+func New() *Handler {
+	h, _, err := newDefaultHandler()
+	if err != nil {
+		// error must not be occurred
+		panic(err)
+	}
 	h.init()
-	return &h
+	return h
 }
 
 // ServeHTTP implments http.Handler.
