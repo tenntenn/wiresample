@@ -3,25 +3,28 @@
 //go:generate wire
 //+build !wireinject
 
-package weather
+package main
 
 import (
 	"github.com/tenntenn/wiresample/clock"
+	"github.com/tenntenn/wiresample/server"
+	"github.com/tenntenn/wiresample/weather"
 	"github.com/tenntenn/wiresample/weather/geo/geomock"
 	"github.com/tenntenn/wiresample/weather/source/mocksrc"
 )
 
-// Injectors from inject_default.go:
+// Injectors from inject_prod.go:
 
-func newDefaultReporter() (*Reporter, func(), error) {
+func setupProd() (*server.Server, func(), error) {
 	clockClock := clock.Default()
 	geoMock := &geomock.GeoMock{}
 	source := &mocksrc.Source{}
-	reporter := &Reporter{
+	reporter := &weather.Reporter{
 		Clock:  clockClock,
 		Geo:    geoMock,
 		Source: source,
 	}
-	return reporter, func() {
+	serverServer := server.New(reporter)
+	return serverServer, func() {
 	}, nil
 }

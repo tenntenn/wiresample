@@ -16,16 +16,6 @@ type Reporter struct {
 	Source source.Source
 }
 
-// NewReporter creates a default reporter.
-func NewReporter() *Reporter {
-	r, _, err := newDefaultReporter()
-	if err != nil {
-		// error must not be occurred
-		panic(err)
-	}
-	return r
-}
-
 // Now returns current weather information of specified address.
 func (r *Reporter) Now(ctx context.Context, address string) (*source.Weather, error) {
 	lat, lng, err := r.Geo.LatLng(ctx, address)

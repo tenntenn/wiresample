@@ -1,4 +1,4 @@
-package handler
+package server
 
 import (
 	"encoding/json"
@@ -7,7 +7,8 @@ import (
 	"github.com/morikuni/failure"
 )
 
-func (h *Handler) Weather(w http.ResponseWriter, r *http.Request) {
+// HandleWeather
+func (s *Server) HandleWeather(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	var req struct {
@@ -21,7 +22,7 @@ func (h *Handler) Weather(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	we, err := h.Reporter.Now(ctx, req.Address)
+	we, err := s.wr.Now(ctx, req.Address)
 	if err != nil {
 		handleError(w, failure.Wrap(err))
 		return
